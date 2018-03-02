@@ -1,32 +1,32 @@
 //server.js
 
-// BASE SETUP
-// =============================================================================
-
-// call the packages we need
-
+/**
+* invoke all the packages
+*/
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 
+/**
+* invoke the mongoose
+*/
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/bearapi');
 
-var Bear = require('./models/Bear')
-
-// configure app to use bodyParser()
-// this will let us get the data from a POST
-
+/**
+* get bodyParser to process POST
+*/
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+var Bear = require('./models/Bear')
+
 var port = process.env.PORT || 8080;
 
-// ROUTES FOR OUR API
-// =============================================================================
-
+/**
+* Define the routes
+*/
 var router = express.Router();
-
 router.use(function(req, res, next) {
 	console.log('Something is happening here');
 	next();
@@ -36,8 +36,9 @@ router.get('/', function(req, res) {
 	res.json({message: 'welcome to our api'});
 });
 
-// more routes for our API will happen here
-
+/**
+* GET and POST routes
+*/
 router.route('/bears')
 	.post(function(req, res) {
 		var bear = new Bear();
@@ -56,7 +57,10 @@ router.route('/bears')
 			res.json(bears);
 		});
 	});
-	
+
+/**
+* route to get one item, edit and delete
+*/
 router.route('/bear/:bear_id')
 	.get(function(req, res) {
 		Bear.findById(req.params.bear_id, function(err, bear) {
@@ -90,14 +94,13 @@ router.route('/bear/:bear_id')
 		});
 	});
 
-
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
-
+/**
+* Register routers
+*/
 app.use('/api', router);
 
-// START THE SERVER
-// =============================================================================
-
+/**
+* Start the server
+*/
 app.listen(port);
 console.log('Magic happens on port ' + port);
